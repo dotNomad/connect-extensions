@@ -78,11 +78,13 @@ jobs:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
   
       - name: Release
-        run: gh release create $EXTENSION_NAME@v0.0.3 --title "$EXTENSION_NAME v0.0.3" $EXTENSION_NAME.tar.gz
+        run: gh release create $EXTENSION_NAME@v0.0.4 --title "$EXTENSION_NAME v0.0.4" $EXTENSION_NAME.tar.gz
 
       - name: Get extension URL
         id: get_extension_url
-        run: gh release view --repo dotNomad/connect-extensions --json assets --template '{{range .assets}}{{if eq .name "publisher-command-center.tar.gz"}}{{.url}}{{end}}{{end}}' >> "$GITHUB_OUTPUT"
+        run: |
+          url=$(gh release view --json assets --jq '.assets[0].url')
+          echo "extension_url=$url" >> "$GITHUB_OUTPUT"
 
   check:
     needs: [release]

@@ -8,7 +8,7 @@ from cachetools import TTLCache, cached
 
 client = connect.Client()
 
-# Trigger workflow
+# Trigger
 app = FastAPI()
 
 # Create cache with TTL=1hour and unlimited size
