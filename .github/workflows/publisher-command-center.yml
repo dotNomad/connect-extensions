@@ -85,12 +85,3 @@ jobs:
         run: |
           url=$(gh release view --json assets --jq '.assets[0].url')
           echo "extension_url=$url" >> "$GITHUB_OUTPUT"
-
-  check:
-    needs: [release]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check extension URL
-        run: |
-          echo "Extension URL: ${{ needs.release.outputs.extension_url }}"
