@@ -78,7 +78,7 @@ jobs:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
   
       - name: Release
-        run: gh release create $EXTENSION_NAME@v0.0.2 --title "$EXTENSION_NAME v0.0.2" $EXTENSION_NAME.tar.gz
+        run: gh release create $EXTENSION_NAME@v0.0.3 --title "$EXTENSION_NAME v0.0.3" $EXTENSION_NAME.tar.gz
 
       - name: Get extension URL
         id: get_extension_url
