@@ -82,7 +82,7 @@ jobs:
 
       - name: Get extension URL
         id: get_extension_url
-        run: gh release view --json assets --jq '.assets[0].url' >> "$GITHUB_OUTPUT"
+        run: gh release view --repo dotNomad/connect-extensions --json assets --template '{{range .assets}}{{if eq .name "publisher-command-center.tar.gz"}}{{.url}}{{end}}{{end}}' >> "$GITHUB_OUTPUT"
 
   check:
     needs: [release]
