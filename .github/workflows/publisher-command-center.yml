@@ -63,8 +63,12 @@ jobs:
 
   release:
     if: github.event_name == 'push' && github.ref_name == 'main'
-    needs: [package, build]
+    needs: [package]
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      extension_url: ${{ steps.get_extension_url.outputs.extension_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -75,5 +79,16 @@ jobs:
   
       - name: Release
         run: gh release create $EXTENSION_NAME@v0.0.1 --title "$EXTENSION_NAME v0.0.1" $EXTENSION_NAME.tar.gz
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get extension URL
+        id: get_extension_url
+        run: gh release view --json assets --jq '.assets[0].url' >> "$GITHUB_OUTPUT"
+
+  check:
+    needs: [release]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check extension URL
+        run: |
+          echo "Extension URL: ${{ needs.release.outputs.extension_url }}"
