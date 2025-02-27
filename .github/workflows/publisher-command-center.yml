@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - 'extensions/publisher-command-center/**'
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'extensions/publisher-command-center/**'
 
 env:
   EXTENSION_NAME: publisher-command-center
@@ -55,3 +60,16 @@ jobs:
         with:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
           path: ${{ env.EXTENSION_NAME }}.tar.gz
+
+  release:
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    needs: [package, build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.EXTENSION_NAME }}.tar.gz
+  
+      - name: Release
+        run: gh release create $EXTENSION_NAME@v0.0.1 --title "$EXTENSION_NAME v0.0.1" $EXTENSION_NAME.tar.gz
