@@ -71,11 +71,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: jq -c . < manifest.json
+      - name: Get manifest
+        id: get_manifest
+        run: echo "EXTENSION_MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
 
-      # - name: Get manifest
-      #   id: get_manifest
-      #   run: echo "MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
+      - run: echo "$EXTENSION_MANIFEST"
 
       # - run: echo '${{ fromJson(env.PACKAGE_JSON).version }}'
 
