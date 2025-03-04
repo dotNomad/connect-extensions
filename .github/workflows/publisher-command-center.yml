@@ -79,7 +79,7 @@ jobs:
         run: echo "EXTENSION_MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
 
       - name: Manifest version
-        run: jq -c '.extension.version' < $EXTENSION_MANIFEST
+        run: echo $EXTENSION_MANIFEST | jq '.extension.version'
 
       - name: Last released version
         run: semver -c $(gh release view --json tagName --jq '.tagName')
