@@ -68,42 +68,31 @@ jobs:
     defaults:
       run:
         working-directory: ./extensions/${{ env.EXTENSION_NAME }}
+    outputs:
+      should_release: ${{ steps.should_release.outputs.should_release }}
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
+
       - run: npm install -g semver
 
-      - name: Get manifest
-        id: get_manifest
-        run: echo "EXTENSION_MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
-
-      - name: Manifest version
-        run: echo $EXTENSION_MANIFEST | jq '.extension.version'
-
-      - name: Last released version
-        run: semver -c $(gh release view --json tagName --jq '.tagName')
-
-      - name: Is manifest version newer
-        id: version_check
+      - name: Check if manifest has newer version
+        id: should_release
         run: |
+          EXTENSION_MANIFEST=$(jq -c . < manifest.json)
+          MANIFEST_VERSION=$(echo $EXTENSION_MANIFEST | jq -r '.extension.version')
+          LAST_RELEASED_VERSION=$(semver -c $(gh release view --json tagName --jq '.tagName'))
           HIGHER_VERSION=$(semver "0.0.5" "0.0.4" | tail -n 1)
-          if [ "0.0.5" = "$HIGHER_VERSION" ]; then
-            echo "Should release"
+          if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ]; then
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Should not release"
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # - run: echo '${{ fromJson(env.PACKAGE_JSON).version }}'
-
-      # - name: Use environment variable
-      #   run: echo "The value of manifest is ${{ steps.get_manifest.outputs.manifest }}"
-          
-      # - name: Access extension attributes
-      #   run: echo "The version is ${{ fromJSON(steps.get_manifest.outputs.manifest).version }}"
-
   release:
-    if: github.event_name == 'push' && github.ref_name == 'main'
+    if: github.event_name == 'push' && github.ref_name == 'main' && needs.should_release.outputs.should_release
     needs: [should_release, package]
     runs-on: ubuntu-latest
     outputs:
