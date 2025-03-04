@@ -78,18 +78,30 @@ jobs:
 
       - run: npm install -g semver
 
+      - name: Get extension manifest
+        run: echo "EXTENSION_MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
+
+      - name: Get manifest extension version
+        run: echo "MANIFEST_VERSION=$(echo $EXTENSION_MANIFEST | jq -r '.extension.version')" >> "$GITHUB_ENV"
+
+      - name: Get last released version
+        run: |
+          LAST_RELEASED_VERSION=$(semver -c $(gh release view --json tagName --jq '.tagName'))
+          echo "LAST_RELEASED_VERSION=$LAST_RELEASED_VERSION" >> "$GITHUB_ENV"
+
       - name: Check if manifest has newer version
         id: should_release
         run: |
-          EXTENSION_MANIFEST=$(jq -c . < manifest.json)
-          MANIFEST_VERSION=$(echo $EXTENSION_MANIFEST | jq -r '.extension.version')
-          LAST_RELEASED_VERSION=$(semver -c $(gh release view --json tagName --jq '.tagName'))
-          HIGHER_VERSION=$(semver "0.0.5" "0.0.4" | tail -n 1)
+          echo "The last released version is '$LAST_RELEASED_VERSION' and the manifest version is '$MANIFEST_VERSION'"
+          HIGHER_VERSION=$(semver "$MANIFEST_VERSION" "$LAST_RELEASED_VERSION" | tail -n 1)
           if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ]; then
+            echo "Releasing: the manifest version is higher than the last released version"
             echo "should_release=true" >> "$GITHUB_OUTPUT"
           else
+            echo "Should not release: the manifest version is not higher than the last released version"
             echo "should_release=false" >> "$GITHUB_OUTPUT"
           fi
+          
 
   release:
     if: github.event_name == 'push' && github.ref_name == 'main' && needs.should_release.outputs.should_release
