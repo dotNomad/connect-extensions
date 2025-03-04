@@ -65,7 +65,7 @@ jobs:
 
 
   should_release:
-    # if: github.event_name == 'push' && github.ref_name == 'main'
+    if: github.event_name == 'push' && github.ref_name == 'main'
     runs-on: ubuntu-latest
     defaults:
       run:
