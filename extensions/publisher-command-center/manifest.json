@@ -52,5 +52,8 @@
 		"requirements.txt": {
 			"checksum": "a162a98758867a701ce693948ffdfa67"
 		}
+	},
+	"extension": {
+		"version": "0.0.5"
 	}
 }

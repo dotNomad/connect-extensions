@@ -12,6 +12,7 @@ on:
 
 env:
   EXTENSION_NAME: publisher-command-center
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -42,6 +43,7 @@ jobs:
             extensions/${{ env.EXTENSION_NAME }}/manifest.json
             extensions/${{ env.EXTENSION_NAME }}/connect-extension.toml
 
+
   package:
     needs: build
     runs-on: ubuntu-latest
@@ -61,12 +63,54 @@ jobs:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
           path: ${{ env.EXTENSION_NAME }}.tar.gz
 
-  release:
+
+  should_release:
     if: github.event_name == 'push' && github.ref_name == 'main'
-    needs: [package]
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        working-directory: ./extensions/${{ env.EXTENSION_NAME }}
+    outputs:
+      should_release: ${{ steps.should_release.outputs.should_release }}
+      version: ${{ steps.should_release.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+      - run: npm install -g semver
+
+      - name: Get extension manifest
+        run: echo "EXTENSION_MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
+
+      - name: Get manifest extension version
+        run: echo "MANIFEST_VERSION=$(echo $EXTENSION_MANIFEST | jq -r '.extension.version')" >> "$GITHUB_ENV"
+
+      - name: Get last released version
+        run: |
+          LAST_RELEASED_VERSION=$(semver -c $(gh release view --json tagName --jq '.tagName'))
+          echo "LAST_RELEASED_VERSION=$LAST_RELEASED_VERSION" >> "$GITHUB_ENV"
+
+      - name: Check if manifest has newer version
+        id: should_release
+        run: |
+          echo "The last released version is '$LAST_RELEASED_VERSION' and the manifest version is '$MANIFEST_VERSION'"
+          HIGHER_VERSION=$(semver "$MANIFEST_VERSION" "$LAST_RELEASED_VERSION" | tail -n 1)
+          if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ]; then
+            echo "Should release: the manifest version is higher than the last released version"
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "version=$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
+          else
+            echo "Should not release: the manifest version is not higher than the last released version"
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+          fi
+          
+
+  release:
+    if: github.event_name == 'push' && github.ref_name == 'main' && needs.should_release.outputs.should_release
+    needs: [should_release, package]
+    runs-on: ubuntu-latest
     outputs:
       extension_url: ${{ steps.get_extension_url.outputs.extension_url }}
 
@@ -78,7 +122,10 @@ jobs:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
   
       - name: Release
-        run: gh release create $EXTENSION_NAME@v0.0.4 --title "$EXTENSION_NAME v0.0.4" $EXTENSION_NAME.tar.gz
+        run: |
+          gh release create $EXTENSION_NAME@v${{ needs.should_release.outputs.version }} \
+            --title "$EXTENSION_NAME v0${{ needs.should_release.outputs.version }}" \
+            $EXTENSION_NAME.tar.gz
 
       - name: Get extension URL
         id: get_extension_url
