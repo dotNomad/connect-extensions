@@ -71,17 +71,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get manifest
-        id: get_manifest
-        run: |
-          content=$(cat manifest.json)
-          echo "manifest=$content" >> "$GITHUB_OUTPUT"
+      - run: jq -c . < manifest.json
 
-      - name: Use environment variable
-        run: echo "The value of manifest is ${{ steps.get_manifest.outputs.manifest }}"
+      # - name: Get manifest
+      #   id: get_manifest
+      #   run: echo "MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
+
+      # - run: echo '${{ fromJson(env.PACKAGE_JSON).version }}'
+
+      # - name: Use environment variable
+      #   run: echo "The value of manifest is ${{ steps.get_manifest.outputs.manifest }}"
           
-      - name: Access extension attributes
-        run: echo "The version is ${{ fromJSON(steps.get_manifest.outputs.manifest).version }}"
+      # - name: Access extension attributes
+      #   run: echo "The version is ${{ fromJSON(steps.get_manifest.outputs.manifest).version }}"
 
   release:
     if: github.event_name == 'push' && github.ref_name == 'main'
