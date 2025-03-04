@@ -77,6 +77,9 @@ jobs:
 
       - run: echo "$EXTENSION_MANIFEST"
 
+      - name: Last released version
+        run: semver -c $(gh release view --json tagName --jq '.tagName')
+
       # - run: echo '${{ fromJson(env.PACKAGE_JSON).version }}'
 
       # - name: Use environment variable
