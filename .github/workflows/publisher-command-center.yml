@@ -124,7 +124,7 @@ jobs:
       - name: Release
         run: |
           gh release create $EXTENSION_NAME@v${{ needs.should_release.outputs.version }} \
-            --title "$EXTENSION_NAME v0${{ needs.should_release.outputs.version }}" \
+            --title "$EXTENSION_NAME v${{ needs.should_release.outputs.version }}" \
             $EXTENSION_NAME.tar.gz
 
       - name: Get extension URL
