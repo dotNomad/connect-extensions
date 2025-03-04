@@ -61,9 +61,31 @@ jobs:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
           path: ${{ env.EXTENSION_NAME }}.tar.gz
 
+  should_release:
+    # if: github.event_name == 'push' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./extensions/${{ env.EXTENSION_NAME }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get manifest
+        id: get_manifest
+        run: |
+          content=$(cat manifest.json)
+          echo "manifest=$content" >> "$GITHUB_OUTPUT"
+
+      - name: Use environment variable
+        run: echo "The value of manifest is ${{ steps.get_manifest.outputs.manifest }}"
+          
+      - name: Access extension attributes
+        run: echo "The version is ${{ fromJSON(steps.get_manifest.outputs.manifest).version }}"
+
   release:
     if: github.event_name == 'push' && github.ref_name == 'main'
-    needs: [package]
+    needs: [should_release, package]
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
