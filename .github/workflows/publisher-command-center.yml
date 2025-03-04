@@ -43,6 +43,7 @@ jobs:
             extensions/${{ env.EXTENSION_NAME }}/manifest.json
             extensions/${{ env.EXTENSION_NAME }}/connect-extension.toml
 
+
   package:
     needs: build
     runs-on: ubuntu-latest
@@ -62,6 +63,7 @@ jobs:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
           path: ${{ env.EXTENSION_NAME }}.tar.gz
 
+
   should_release:
     # if: github.event_name == 'push' && github.ref_name == 'main'
     runs-on: ubuntu-latest
@@ -70,6 +72,7 @@ jobs:
         working-directory: ./extensions/${{ env.EXTENSION_NAME }}
     outputs:
       should_release: ${{ steps.should_release.outputs.should_release }}
+      version: ${{ steps.should_release.outputs.version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -97,6 +100,7 @@ jobs:
           if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ]; then
             echo "Releasing: the manifest version is higher than the last released version"
             echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "version=$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
           else
             echo "Should not release: the manifest version is not higher than the last released version"
             echo "should_release=false" >> "$GITHUB_OUTPUT"
@@ -118,7 +122,10 @@ jobs:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
   
       - name: Release
-        run: gh release create $EXTENSION_NAME@v0.0.4 --title "$EXTENSION_NAME v0.0.4" $EXTENSION_NAME.tar.gz
+        run: |
+          gh release create $EXTENSION_NAME@v${{ needs.should_release.outputs.version }} \
+            --title "$EXTENSION_NAME v0${{ needs.should_release.outputs.version }}" \
+            $EXTENSION_NAME.tar.gz
 
       - name: Get extension URL
         id: get_extension_url
