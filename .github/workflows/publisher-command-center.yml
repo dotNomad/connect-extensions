@@ -12,6 +12,7 @@ on:
 
 env:
   EXTENSION_NAME: publisher-command-center
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -92,8 +93,6 @@ jobs:
     if: github.event_name == 'push' && github.ref_name == 'main'
     needs: [should_release, package]
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       extension_url: ${{ steps.get_extension_url.outputs.extension_url }}
 
