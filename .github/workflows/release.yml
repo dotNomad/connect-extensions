@@ -25,7 +25,7 @@ env:
 
 jobs:
   release:
-    if: github.event_name == 'push' && github.ref_name == 'main'
+    if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.ref_name == 'main'
     runs-on: ubuntu-latest
     outputs:
       extension-url: ${{ steps.get_extension_url.outputs.extension_url }}
