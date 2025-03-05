@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'extensions/reaper/**'
+  workflow_dispatch:
 
 env:
   EXTENSION_NAME: reaper
