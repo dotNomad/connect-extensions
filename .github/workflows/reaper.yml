@@ -28,6 +28,8 @@ jobs:
     uses: ./.github/workflows/should-release.yml
     with:
       extension-name: reaper
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
   release:
     if: needs.should-release.outputs.should-release == 'true'
@@ -36,3 +38,5 @@ jobs:
     with:
       extension-name: reaper
       version: ${{ needs.should-release.outputs.version }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

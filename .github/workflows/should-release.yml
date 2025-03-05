@@ -7,6 +7,10 @@ on:
         description: "The name of the extension"
         required: true
         type: string
+    secrets:
+      GH_TOKEN:
+        description: "GitHub token"
+        required: true
     outputs:
       should-release:
         description: "Whether the extension should be released"
@@ -14,6 +18,9 @@ on:
       version:
         description: "The version of the extension to be released"
         value: ${{ jobs.should_release.outputs.version }}
+
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
 jobs:
   should_release:

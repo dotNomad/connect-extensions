@@ -11,10 +11,17 @@ on:
         description: "The version of the extension to be released"
         required: true
         type: string
+    secrets:
+      GH_TOKEN:
+        description: "GitHub token"
+        required: true
     outputs:
       extension-url:
         description: "The URL of the extension TAR file"
         value: ${{ jobs.release.outputs.extension-url }}
+
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
 jobs:
   release:

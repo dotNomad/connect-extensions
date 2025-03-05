@@ -68,6 +68,8 @@ jobs:
     uses: ./.github/workflows/should-release.yml
     with:
       extension-name: publisher-command-center
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     if: needs.should-release.outputs.should-release == 'true'
@@ -76,3 +78,5 @@ jobs:
     with:
       extension-name: publisher-command-center
       version: ${{ needs.should-release.outputs.version }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
