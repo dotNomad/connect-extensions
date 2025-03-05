@@ -1,0 +1,43 @@
+name: Release extension
+
+on:
+  workflow_call:
+    inputs:
+      extension-name:
+        description: "The name of the extension"
+        required: true
+        type: string
+      version:
+        description: "The version of the extension to be released"
+        required: true
+        type: string
+    outputs:
+      extension-url:
+        description: "The URL of the extension TAR file"
+        value: ${{ jobs.release.outputs.extension-url }}
+
+jobs:
+  release:
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    outputs:
+      extension-url: ${{ steps.get_extension_url.outputs.extension_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.extension-name }}.tar.gz
+  
+      - name: Release
+        run: |
+          gh release create ${{ inputs.extension-name }}@v${{ inputs.version }} \
+            --title "${{ inputs.extension-name }} v${{ inputs.version }}" \
+            ${{ inputs.extension-name }}.tar.gz
+
+      - name: Get extension URL
+        id: get_extension_url
+        run: |
+          url=$(gh release view --json assets --jq '.assets[0].url')
+          echo "extension_url=$url" >> "$GITHUB_OUTPUT"
