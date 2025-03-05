@@ -75,7 +75,7 @@ jobs:
   release:
     if: needs.should-release.outputs.should-release == 'true'
     uses: ./.github/workflows/release.yml
-    needs: [should-release]
+    needs: [should-release, package]
     with:
       extension-name: publisher-command-center
       version: ${{ needs.should-release.outputs.version }}
