@@ -108,7 +108,7 @@ jobs:
           
 
   release:
-    if: github.event_name == 'push' && github.ref_name == 'main' && needs.should_release.outputs.should_release
+    if: github.event_name == 'push' && github.ref_name == 'main' && needs.should_release.outputs.should_release == 'true'
     needs: [should_release, package]
     runs-on: ubuntu-latest
     outputs:
