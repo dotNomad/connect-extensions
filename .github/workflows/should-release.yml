@@ -44,7 +44,7 @@ jobs:
       - name: Get extension manifest
         id: get_manifest
         run: echo "manifest=$(jq -c . < manifest.json)" >> "$GITHUB_OUTPUT"
-        working-directory: ./extension/${{ inputs.extension-name }}
+        working-directory: ./extensions/${{ inputs.extension-name }}
 
       - name: Get manifest extension version
         run: echo "MANIFEST_VERSION=$(echo ${{ steps.get_manifest.outputs.manifest }} | jq -r '.extension.version')" >> "$GITHUB_ENV"
