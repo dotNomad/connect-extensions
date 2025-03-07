@@ -8,9 +8,12 @@ import semverRcompare from "semver/functions/rcompare";
 import { Extension, ExtensionManifest, ExtensionVersion } from "./types";
 
 const extensionName = process.env.EXTENSION_NAME;
+// Runs from ./scripts/dist so go up an additional level
 const manifestPath = path.join(
   __dirname,
-  "../extensions",
+  "..",
+  "..",
+  "extensions",
   extensionName,
   "manifest.json"
 );
@@ -135,7 +138,13 @@ class ExtensionList {
   }
 }
 
-const extensionListFilePath = path.join(__dirname, "../extensions.json");
+// Runs from ./scripts/dist so go up an additional level
+const extensionListFilePath = path.join(
+  __dirname,
+  "..",
+  "..",
+  "extensions.json"
+);
 
 const list = ExtensionList.fromFile(extensionListFilePath);
 list.addRelease(manifest, githubRelease);
