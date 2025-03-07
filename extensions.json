@@ -1,20 +1,22 @@
-[
-  {
-    "name": "publisher-command-center",
-    "title": "Publisher Command Center",
-    "description": "A dashboard for publishers to help manage and track their content",
-    "homepage": "https://github.com/posit-dev/connect-extensions/tree/main/extensions/publisher-command-center",
-    "latestVersion": {
-      "version": "0.1.9",
-      "released": "2025-03-07T20:54:56Z",
-      "url": "https://github.com/dotNomad/connect-extensions/releases/download/publisher-command-center%40v0.1.9/publisher-command-center.tar.gz"
-    },
-    "versions": [
-      {
+{
+  "extensions": [
+    {
+      "name": "publisher-command-center",
+      "title": "Publisher Command Center",
+      "description": "A dashboard for publishers to help manage and track their content",
+      "homepage": "https://github.com/posit-dev/connect-extensions/tree/main/extensions/publisher-command-center",
+      "latestVersion": {
         "version": "0.1.9",
         "released": "2025-03-07T20:54:56Z",
         "url": "https://github.com/dotNomad/connect-extensions/releases/download/publisher-command-center%40v0.1.9/publisher-command-center.tar.gz"
-      }
-    ]
-  }
-]
+      },
+      "versions": [
+        {
+          "version": "0.1.9",
+          "released": "2025-03-07T20:54:56Z",
+          "url": "https://github.com/dotNomad/connect-extensions/releases/download/publisher-command-center%40v0.1.9/publisher-command-center.tar.gz"
+        }
+      ]
+    }
+  ]
+}

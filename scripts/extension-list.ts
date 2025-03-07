@@ -130,7 +130,7 @@ class ExtensionList {
   }
 
   public stringify() {
-    return JSON.stringify(this.extensions, null, 2);
+    return JSON.stringify({ extensions: this.extensions }, null, 2);
   }
 
   private sortExtensions() {
