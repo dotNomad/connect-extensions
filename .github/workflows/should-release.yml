@@ -12,9 +12,6 @@ on:
         description: "GitHub token"
         required: true
     outputs:
-      manifest:
-        description: "The manifest of the extension"
-        value: ${{ jobs.should_release.outputs.manifest }}
       should-release:
         description: "Whether the extension should be released"
         value: ${{ jobs.should_release.outputs.should-release }}
@@ -30,7 +27,6 @@ jobs:
     if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.ref_name == 'main'
     runs-on: ubuntu-latest
     outputs:
-      manifest: ${{ steps.get_manifest.outputs.manifest }}
       should-release: ${{ steps.should_release.outputs.should_release }}
       version: ${{ steps.should_release.outputs.version }}
 
@@ -42,12 +38,11 @@ jobs:
       - run: npm install -g semver
 
       - name: Get extension manifest
-        id: get_manifest
-        run: echo "manifest=$(jq -c . < manifest.json)" >> "$GITHUB_OUTPUT"
+        run: echo "EXTENSION_MANIFEST=$(jq -c . < manifest.json)" >> "$GITHUB_ENV"
         working-directory: ./extensions/${{ inputs.extension-name }}
 
       - name: Get manifest extension version
-        run: echo "MANIFEST_VERSION=$(echo ${{ steps.get_manifest.outputs.manifest }} | jq -r '.extension.version')" >> "$GITHUB_ENV"
+        run: echo "MANIFEST_VERSION=$(echo $EXTENSION_MANIFEST | jq -r '.extension.version')" >> "$GITHUB_ENV"
 
       - name: Get lastest version
         continue-on-error: true
