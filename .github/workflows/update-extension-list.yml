@@ -1,0 +1,35 @@
+name: Update extension list
+
+on:
+  workflow_call:
+    inputs:
+      extension-name:
+        description: "The name of the extension"
+        required: true
+        type: string
+      release:
+        description: "The GitHub Release details"
+        required: true
+        type: string
+
+jobs:
+  update-extension-list:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./scripts
+    env:
+      EXTENSION_NAME: ${{ inputs.extension-name }}
+      GITHUB_RELEASE: ${{ inputs.release }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+          cache-dependency-path: scripts/package-lock.json
+
+      - run: npm ci
+      - run: npm run update-extension-list
