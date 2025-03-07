@@ -34,6 +34,7 @@ jobs:
       - run: npm run update-extension-list
         working-directory: ./scripts
 
+      # https://github.com/actions/checkout/tree/v4/?tab=readme-ov-file#push-a-commit-using-the-built-in-token
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
