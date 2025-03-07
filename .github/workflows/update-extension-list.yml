@@ -15,9 +15,6 @@ on:
 jobs:
   update-extension-list:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./scripts
     env:
       EXTENSION_NAME: ${{ inputs.extension-name }}
       GITHUB_RELEASE: ${{ inputs.release }}
@@ -32,6 +29,14 @@ jobs:
           cache-dependency-path: scripts/package-lock.json
 
       - run: npm ci
-      - run: npm run update-extension-list
+        working-directory: ./scripts
 
-      - run: cat ../extensions.json
+      - run: npm run update-extension-list
+        working-directory: ./scripts
+
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add extensions.json
+          git commit -m "Update extension list"
+          git push
