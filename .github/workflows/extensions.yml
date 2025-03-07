@@ -1,0 +1,32 @@
+name: Extension Workflow
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  changed-extensions:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      reaper: ${{ steps.changed.outputs.reaper }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: changed
+        with:
+          filters: |
+            reaper: extensions/reaper/**
+
+  reaper:
+    needs: [changed-extensions]
+    if: ${{ needs.changed-extensions.outputs.reaper == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo "Reaper extension changed"

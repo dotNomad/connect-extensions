@@ -9,7 +9,7 @@ from shiny import App, reactive, render, req, ui
 if os.getenv('RSTUDIO_PRODUCT') != 'CONNECT':
     load_dotenv()
 
-
+# Changed
 client = connect.Client()
 
 def get_content_guids():
