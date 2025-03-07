@@ -33,3 +33,5 @@ jobs:
 
       - run: npm ci
       - run: npm run update-extension-list
+
+      - run: cat ../extensions.json
