@@ -10,7 +10,8 @@ import { Extension, ExtensionManifest, ExtensionVersion } from "./types";
 const extensionName = process.env.EXTENSION_NAME;
 const manifestPath = path.join(
   __dirname,
-  "../extensions",
+  "..",
+  "extensions",
   extensionName,
   "manifest.json"
 );
