@@ -1,0 +1,143 @@
+import fs from "fs";
+import path from "path";
+
+import semverValid from "semver/functions/valid";
+import semverEq from "semver/functions/eq";
+import semverRcompare from "semver/functions/rcompare";
+
+import { Extension, ExtensionManifest, ExtensionVersion } from "./types";
+
+const extensionName = process.env.EXTENSION_NAME;
+const manifestPath = path.join(
+  __dirname,
+  "../extensions",
+  extensionName,
+  "manifest.json"
+);
+const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+const githubRelease = JSON.parse(process.env.GITHUB_RELEASE);
+
+// Sort the given extension's version in descending order
+function sortExtensionVersions(extension: Extension) {
+  extension.versions.sort((a, b) => semverRcompare(a.version, b.version));
+}
+
+class ExtensionList {
+  constructor(public extensions: Extension[]) {
+    this.extensions = extensions;
+  }
+
+  static fromFile(path: string) {
+    const extensions = JSON.parse(fs.readFileSync(path, "utf8")).extensions;
+    return new ExtensionList(extensions);
+  }
+
+  public addRelease(manifest: ExtensionManifest, githubRelease) {
+    const { name, title, description, homepage, version } = manifest.extension;
+    const { assets, published_at } = githubRelease;
+
+    const { browser_download_url } = assets.find(
+      (asset) => asset.name === `${name}.tar.gz`
+    );
+
+    const newVersion = {
+      version,
+      released: published_at,
+      url: browser_download_url,
+    };
+
+    if (this.getExtension(name)) {
+      this.updateExtensionDetails(name, title, description, homepage);
+      this.addExtensionVersion(name, newVersion);
+    } else {
+      this.addNewExtension(name, title, description, homepage, newVersion);
+    }
+  }
+
+  public getExtension(name: string): Extension | undefined {
+    return this.extensions.find((extension) => extension.name === name);
+  }
+
+  private updateExtensionDetails(
+    name: string,
+    title: string,
+    description: string,
+    homepage: string
+  ) {
+    this.updateExtension(name, {
+      ...this.getExtension(name),
+      title,
+      description,
+      homepage,
+    });
+  }
+
+  private addExtensionVersion(name: string, version: ExtensionVersion) {
+    const extension = this.getExtension(name);
+    if (extension === undefined) {
+      throw new Error(`Extension ${name} does not exist in the list`);
+    }
+    // Check that the version is valid
+    if (!semverValid(version.version)) {
+      throw new Error(`Invalid version: ${version.version}`);
+    }
+    // Check if the version already exists
+    if (extension.versions.some((v) => semverEq(v.version, version.version))) {
+      throw new Error(`Version ${version.version} already exists`);
+    }
+
+    // Add the version to the list
+    extension.versions.push(version);
+    sortExtensionVersions(extension);
+
+    // Set the latest version to the newest semver released
+    extension.latestVersion = extension.versions[0];
+
+    this.updateExtension(extension.name, extension);
+  }
+
+  private addNewExtension(
+    name: string,
+    title: string,
+    description: string,
+    homepage: string,
+    initialVersion: ExtensionVersion
+  ) {
+    if (this.getExtension(name) !== undefined) {
+      throw new Error(`Extension ${name} already exists in the list`);
+    }
+    this.extensions.push({
+      name,
+      title,
+      description,
+      homepage,
+      latestVersion: initialVersion,
+      versions: [initialVersion],
+    });
+    this.sortExtensions();
+  }
+
+  private updateExtension(name: string, data: Extension) {
+    const index = this.extensions.findIndex((ex) => ex.name === name);
+    if (index === -1) {
+      throw new Error(`Failed to update Extension ${name}, not found in list`);
+    }
+    this.extensions[index] = data;
+  }
+
+  public stringify() {
+    return JSON.stringify(this.extensions, null, 2);
+  }
+
+  private sortExtensions() {
+    this.extensions.sort((a, b) => a.name.localeCompare(b.name));
+  }
+}
+
+const extensionListFilePath = path.join(__dirname, "../extensions.json");
+
+const list = ExtensionList.fromFile(extensionListFilePath);
+list.addRelease(manifest, githubRelease);
+
+fs.writeFileSync(extensionListFilePath, list.stringify());

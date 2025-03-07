@@ -3,12 +3,12 @@ name: Publisher Commander Center Extension
 on:
   pull_request:
     paths:
-      - 'extensions/publisher-command-center/**'
+      - "extensions/publisher-command-center/**"
   push:
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'extensions/publisher-command-center/**'
+      - "extensions/publisher-command-center/**"
   workflow_dispatch:
 
 env:
@@ -26,8 +26,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
-          cache: 'npm'
+          node-version: "lts/*"
+          cache: "npm"
           cache-dependency-path: extensions/${{ env.EXTENSION_NAME }}/package-lock.json
 
       - run: npm ci
@@ -44,7 +44,6 @@ jobs:
             extensions/${{ env.EXTENSION_NAME }}/manifest.json
             extensions/${{ env.EXTENSION_NAME }}/connect-extension.toml
 
-
   package:
     needs: build
     runs-on: ubuntu-latest
@@ -52,8 +51,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-            name: ${{ env.EXTENSION_NAME}}
-            path: ${{ env.EXTENSION_NAME }}
+          name: ${{ env.EXTENSION_NAME}}
+          path: ${{ env.EXTENSION_NAME }}
 
       - name: Create tar
         run: tar -czf $EXTENSION_NAME.tar.gz $EXTENSION_NAME
@@ -63,7 +62,6 @@ jobs:
         with:
           name: ${{ env.EXTENSION_NAME }}.tar.gz
           path: ${{ env.EXTENSION_NAME }}.tar.gz
-
 
   should-release:
     uses: ./.github/workflows/should-release.yml
@@ -81,3 +79,10 @@ jobs:
       version: ${{ needs.should-release.outputs.version }}
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update-extension-list:
+    uses: ./.github/workflows/update-extension-list.yml
+    needs: [release]
+    with:
+      extension-name: publisher-command-center
+      release: ${{ needs.release.outputs.release }}
