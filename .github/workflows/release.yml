@@ -16,9 +16,9 @@ on:
         description: "GitHub token"
         required: true
     outputs:
-      extension-url:
-        description: "The URL of the extension TAR file"
-        value: ${{ jobs.release.outputs.extension-url }}
+      release:
+        description: "The GitHub Release details"
+        value: ${{ jobs.release.outputs.release }}
 
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
     if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) && github.ref_name == 'main'
     runs-on: ubuntu-latest
     outputs:
-      extension-url: ${{ steps.get_extension_url.outputs.extension_url }}
+      release: ${{ steps.get_release_data.outputs.release }}
 
     steps:
       - uses: actions/checkout@v4
@@ -36,15 +36,17 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.extension-name }}.tar.gz
-  
+
+      - name: Release tag
+        run: echo "RELEASE_TAG=${{ inputs.extension-name}}@v${{ inputs.version }}" >> "$GITHUB_ENV"
+
       - name: Release
         run: |
-          gh release create ${{ inputs.extension-name }}@v${{ inputs.version }} \
+          gh release create $RELEASE_TAG \
             --title "${{ inputs.extension-name }} v${{ inputs.version }}" \
             ${{ inputs.extension-name }}.tar.gz
 
-      - name: Get extension URL
-        id: get_extension_url
+      - name: Get release data
+        id: get_release_data
         run: |
-          url=$(gh release view --json assets --jq '.assets[0].url')
-          echo "extension_url=$url" >> "$GITHUB_OUTPUT"
+          echo "RELEASE=$(gh api /repos/${{ github.repository }}/releases/tags/$RELEASE_TAG)" >> "$GITHUB_OUTPUT"
