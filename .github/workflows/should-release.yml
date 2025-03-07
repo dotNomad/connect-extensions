@@ -50,6 +50,7 @@ jobs:
         run: echo "MANIFEST_VERSION=$(echo ${{ steps.get_manifest.outputs.manifest }} | jq -r '.extension.version')" >> "$GITHUB_ENV"
 
       - name: Get lastest version
+        continue-on-error: true
         run: |
           LATEST_VERSION=$(semver -c $(jq -c '.extensions[] | select(.name=="publisher-command-center").latestVersion.version' < extensions.json))
           echo "LATEST_VERSION=$LATEST_VERSION" >> "$GITHUB_ENV"
