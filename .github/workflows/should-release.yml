@@ -51,21 +51,21 @@ jobs:
       - name: Get manifest extension version
         run: echo "MANIFEST_VERSION=$(echo ${{ steps.get_manifest.outputs.manifest }} | jq -r '.extension.version')" >> "$GITHUB_ENV"
 
-      - name: Get last released version
+      - name: Get lastest version
         run: |
-          LAST_RELEASED_VERSION=$(semver -c $(gh release view --json tagName --jq '.tagName'))
-          echo "LAST_RELEASED_VERSION=$LAST_RELEASED_VERSION" >> "$GITHUB_ENV"
+          LATEST_VERSION=$(semver -c $(jq -c '.extensions[] | select(.name=="publisher-command-center").latestVersion.version' < extensions.json))
+          echo "LATEST_VERSION=$LATEST_VERSION" >> "$GITHUB_ENV"
 
       - name: Check if manifest has newer version
         id: should_release
         run: |
-          echo "The last released version is '$LAST_RELEASED_VERSION' and the manifest version is '$MANIFEST_VERSION'"
-          HIGHER_VERSION=$(semver "$MANIFEST_VERSION" "$LAST_RELEASED_VERSION" | tail -n 1)
-            if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ] && [ "$MANIFEST_VERSION" != "$LAST_RELEASED_VERSION" ]; then
-            echo "Should release: the manifest version is higher than the last released version"
+          echo "The last released version is '$LATEST_VERSION' and the manifest version is '$MANIFEST_VERSION'"
+          HIGHER_VERSION=$(semver "$MANIFEST_VERSION" "$LATEST_VERSION" | tail -n 1)
+            if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ] && [ "$MANIFEST_VERSION" != "$LATEST_VERSION" ]; then
+            echo "Should release: the manifest version is higher than the lastest version"
             echo "should_release=true" >> "$GITHUB_OUTPUT"
             echo "version=$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
           else
-            echo "Should not release: the manifest version is not higher than the last released version"
+            echo "Should not release: the manifest version is not higher than the lastest version"
             echo "should_release=false" >> "$GITHUB_OUTPUT"
           fi
