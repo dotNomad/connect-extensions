@@ -6,7 +6,6 @@ import seaborn as sns
 
 sns.set_theme(style="ticks")
 
-
 client = Client()
 
 app_ui = ui.page_sidebar(
