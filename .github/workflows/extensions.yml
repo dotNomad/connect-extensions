@@ -41,6 +41,10 @@ jobs:
         with:
           extension-name: ${{ matrix.extension }}
 
+      - uses: ./.github/actions/release-extension
+        with:
+          extension-name: ${{ matrix.extension }}
+
   complex-extension-changes:
     runs-on: ubuntu-latest
     permissions:

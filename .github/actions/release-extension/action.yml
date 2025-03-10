@@ -1,0 +1,65 @@
+name: Release Extension
+description: Release an extension as a GitHub Release
+
+inputs:
+  extension-name:
+    description: The name of the extension
+    required: true
+    type: string
+outputs:
+  release-tag:
+    description: The GitHub Release tag
+    value: ${{ steps.release_tag.outputs.release_tag }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - uses: actions/setup-node@v4
+
+    - run: npm install -g semver
+      shell: bash
+
+    - name: Get manifest extension version
+      run: echo "MANIFEST_VERSION=$(semver -c $(jq -c -r '.extension.version' < ./extensions/${{ inputs.extension-name }}/manifest.json))" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Get lastest version from extension list
+      continue-on-error: true
+      run: |
+        LATEST_VERSION=$(semver -c $(jq -c '.extensions[] | select(.name=="${{ inputs.extension-name }}").latestVersion.version' < extensions.json))
+        echo "LATEST_VERSION=$LATEST_VERSION" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Check if manifest has newer version
+      id: should_release
+      run: |
+        echo "The last released version is '$LATEST_VERSION' and the manifest version is '$MANIFEST_VERSION'"
+        HIGHER_VERSION=$(semver "$MANIFEST_VERSION" "$LATEST_VERSION" | tail -n 1)
+          if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ] && [ "$MANIFEST_VERSION" != "$LATEST_VERSION" ]; then
+          echo "Should release: the manifest version is higher than the lastest version"
+          echo "should_release=true" >> "$GITHUB_ENV"
+        else
+          echo "Should not release: the manifest version is not higher than the lastest version"
+          echo "should_release=false" >> "$GITHUB_ENV"
+        fi
+      shell: bash
+
+    - uses: actions/download-artifact@v4
+      if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
+      with:
+        name: ${{ inputs.extension-name }}.tar.gz
+
+    - name: Release tag
+      if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
+      id: release_tag
+      run: echo "release_tag=${{ inputs.extension-name }}@v$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Release
+      if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
+      run: |
+        gh release create ${{ steps.release_tag.outputs.release_tag }} \
+          --title "${{ inputs.extension-name }} v$MANIFEST_VERSION" \
+          ${{ inputs.extension-name }}.tar.gz
+      shell: bash
