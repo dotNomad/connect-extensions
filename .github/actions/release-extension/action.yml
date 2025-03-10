@@ -21,7 +21,9 @@ runs:
       shell: bash
 
     - name: Get manifest extension version
-      run: echo "MANIFEST_VERSION=$(semver -c $(jq -c -r '.extension.version' < ./extensions/${{ inputs.extension-name }}/manifest.json))" >> "$GITHUB_ENV"
+      run: |
+        MANIFEST_VERSION=$(semver -c $(jq -c -r '.extension.version' < ./extensions/${{ inputs.extension-name }}/manifest.json))
+        echo "MANIFEST_VERSION=$MANIFEST_VERSION" >> "$GITHUB_ENV"
       shell: bash
 
     - name: Get lastest version from extension list
