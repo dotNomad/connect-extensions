@@ -40,10 +40,10 @@ runs:
         HIGHER_VERSION=$(semver "$MANIFEST_VERSION" "$LATEST_VERSION" | tail -n 1)
           if [ "$MANIFEST_VERSION" = "$HIGHER_VERSION" ] && [ "$MANIFEST_VERSION" != "$LATEST_VERSION" ]; then
           echo "Should release: the manifest version is higher than the lastest version"
-          echo "should_release=true" >> "$GITHUB_ENV"
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
         else
           echo "Should not release: the manifest version is not higher than the lastest version"
-          echo "should_release=false" >> "$GITHUB_ENV"
+          echo "should_release=false" >> "$GITHUB_OUTPUT"
         fi
       shell: bash
 

@@ -35,6 +35,8 @@ jobs:
         # e.g. ['reaper'] if the reaper extension dir changed
         extension: ${{ fromJSON(needs.simple-extension-changes.outputs.changes) }}
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
