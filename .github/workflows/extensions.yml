@@ -36,3 +36,27 @@ jobs:
 
     steps:
       - run: echo ${{ matrix.extension }}
+
+  complex-extension-changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      publisher-command-center: ${{ steps.changes.outputs.publisher-command-center }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            publisher-command-center: extensions/publisher-command-center/**
+
+  publisher-command-center:
+    needs: [complex-extension-changes]
+    if: ${{ needs.complex-extension-changes.outputs.publisher-command-center == 'true'}}
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo "Publisher Command Center"
