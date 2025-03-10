@@ -35,7 +35,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: echo ${{ matrix.extension }}
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/package-extension
+        with:
+          extension-name: ${{ matrix.extension }}
 
   complex-extension-changes:
     runs-on: ubuntu-latest

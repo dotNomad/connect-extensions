@@ -1,0 +1,22 @@
+name: Package Extension
+description: Package an extension into a tarball for release
+
+inputs:
+  extension-name:
+    description: The name of the extension
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Create tar
+      run: tar -czf ${{ inputs.extension-name}}.tar.gz ./extensions/${{ inputs.extension-name}}
+      shell: bash
+
+    - name: Upload extension tar
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.extension-name }}.tar.gz
+        path: ${{ inputs.extension-name }}.tar.gz
