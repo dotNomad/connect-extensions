@@ -70,3 +70,11 @@ jobs:
 
     steps:
       - run: echo "Publisher Command Center"
+
+  update-extension-list:
+    runs-on: ubuntu-latest
+    needs: [simple-extensions, publisher-command-center]
+
+    if: ${{ always() }}
+    steps:
+      - run: echo ${{ toJSON(needs.simple-extensions.outputs) }}

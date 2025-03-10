@@ -55,7 +55,7 @@ runs:
     - name: Release tag
       if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
       id: release_tag
-      run: echo "release_tag=${{ inputs.extension-name }}@v$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
+      run: echo "${{ inputs.extension-name }}_release_tag=${{ inputs.extension-name }}@v$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Release
