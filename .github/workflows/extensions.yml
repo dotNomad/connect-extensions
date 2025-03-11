@@ -98,7 +98,6 @@ jobs:
   update-extension-list:
     runs-on: ubuntu-latest
     needs: [fetch-releases]
-    # if: ${{ needs.fetch-releases.outputs.releases != '[]' }}
     env:
       RELEASES: ${{ needs.fetch-releases.outputs.releases }}
 
