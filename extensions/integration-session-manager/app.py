@@ -6,7 +6,7 @@ import seaborn as sns
 
 sns.set_theme(style="ticks")
 
-# Workflow trigger
+# Trigger Workflow 2
 client = Client()
 
 app_ui = ui.page_sidebar(
