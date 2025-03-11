@@ -57,7 +57,7 @@ runs:
     - name: Release
       if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
       run: |
-        gh release create ${{ steps.release_tag.outputs.${{ inputs.extension-name }}_release_tag }} \
+        gh release create ${{ steps.release_tag.outputs.['${{ inputs.extension-name }}_release_tag'] }} \
           --title "${{ inputs.extension-name }} v$MANIFEST_VERSION" \
           ${{ inputs.extension-name }}.tar.gz
       shell: bash
