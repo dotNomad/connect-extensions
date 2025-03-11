@@ -82,6 +82,24 @@ jobs:
     if: ${{ always() }}
 
     steps:
+      - name: Download GitHub release data
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*.json
+          path: releases
+          merge-multiple: true
+
+      - run: echo "RELEASES=$(cat releases/*.json | jq --slurp .)" >> "$GITHUB_ENV"
+
+      - name: Check if releases exist
+        run: |
+          if [ "$RELEASES" == "[]" ]; then
+            echo "No extension releases found, exiting job successfully"
+            exit 0
+          else
+            echo "Found releases, continuing with update to extension list"
+          fi
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -92,15 +110,6 @@ jobs:
 
       - run: npm ci
         working-directory: ./scripts
-
-      - name: Download GitHub release data
-        uses: actions/download-artifact@v4
-        with:
-          pattern: release-*.json
-          path: releases
-          merge-multiple: true
-
-      - run: echo "RELEASES=$(cat releases/*.json | jq --slurp .)" >> "$GITHUB_ENV"
 
       - run: npm run update-extension-list
         working-directory: ./scripts
