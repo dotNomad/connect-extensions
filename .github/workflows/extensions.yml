@@ -95,6 +95,8 @@ jobs:
         id: fetch-releases
         run: echo "releases=$(cat releases/*.json | jq -c --slurp .)" >> "$GITHUB_OUTPUT"
 
+      - run: echo '${{ steps.fetch-releases.outputs.releases }}'
+
   update-extension-list:
     runs-on: ubuntu-latest
     needs: [fetch-releases]
