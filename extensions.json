@@ -24,11 +24,16 @@
       "description": "A view to a kill.",
       "homepage": "https://github.com/posit-dev/connect-extensions/tree/main/extensions/reaper",
       "latestVersion": {
-        "version": "2.0.1",
-        "released": "2025-03-11T22:38:48Z",
-        "url": "https://github.com/dotNomad/connect-extensions/releases/download/reaper%40v2.0.1/reaper.tar.gz"
+        "version": "2.0.3",
+        "released": "2025-03-11T22:42:29Z",
+        "url": "https://github.com/dotNomad/connect-extensions/releases/download/reaper%40v2.0.3/reaper.tar.gz"
       },
       "versions": [
+        {
+          "version": "2.0.3",
+          "released": "2025-03-11T22:42:29Z",
+          "url": "https://github.com/dotNomad/connect-extensions/releases/download/reaper%40v2.0.3/reaper.tar.gz"
+        },
         {
           "version": "2.0.1",
           "released": "2025-03-11T22:38:48Z",
