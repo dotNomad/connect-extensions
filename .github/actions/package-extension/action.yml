@@ -25,10 +25,11 @@ runs:
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.extension-name }}
 
     - name: Create tar from artifact
       if: ${{ inputs.artifact-name != '' }}
-      run: tar -czf ${{ inputs.extension-name }}.tar.gz ${{ inputs.artifact-name }}
+      run: tar -czf ${{ inputs.extension-name }}.tar.gz ${{ inputs.extension-name }}
       shell: bash
 
     - name: Upload extension tar
