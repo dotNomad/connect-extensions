@@ -8,7 +8,7 @@ import semverRcompare from "semver/functions/rcompare";
 import { Extension, ExtensionManifest, ExtensionVersion } from "./types";
 
 function getExtensionNameFromRelease(release: any): string {
-  const tag = release.tagName as string;
+  const tag = release.tag_name as string;
   return tag.split("@")[0];
 }
 
