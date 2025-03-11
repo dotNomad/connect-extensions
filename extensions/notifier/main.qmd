@@ -8,7 +8,7 @@ library(connectapi)
 library(dplyr)
 library(httr2)
 
-# Trigger workflow
+# Trigger worflow
 client <- connect()
 
 WEBHOOK_URL <- Sys.getenv("WEBHOOK_URL")

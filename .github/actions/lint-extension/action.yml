@@ -20,7 +20,7 @@ runs:
           elif (.extension.homepage | type) != "string" then error("Missing extension.homepage")
           elif (.extension.version | type) != "string" then error("Missing extension.version")
           else . end
-        ' ./extensions/notifier/manifest.json
+        ' ./extensions/${{ inputs.extension-name }}/manifest.json
       shell: bash
 
     - uses: actions/setup-node@v4
