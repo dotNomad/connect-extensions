@@ -98,23 +98,25 @@ jobs:
   update-extension-list:
     runs-on: ubuntu-latest
     needs: [fetch-releases]
-    if: ${{ needs.fetch-releases.outputs.releases != '[]' }}
+    # if: ${{ needs.fetch-releases.outputs.releases != '[]' }}
     env:
       RELEASES: ${{ needs.fetch-releases.outputs.releases }}
 
     steps:
-      - uses: actions/checkout@v4
+      - run: echo '${{ env.RELEASES }}'
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
-          cache: "npm"
-          cache-dependency-path: scripts/package-lock.json
+      # - uses: actions/checkout@v4
 
-      - run: npm ci
-        working-directory: ./scripts
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "lts/*"
+      #     cache: "npm"
+      #     cache-dependency-path: scripts/package-lock.json
 
-      - run: npm run update-extension-list
-        working-directory: ./scripts
+      # - run: npm ci
+      #   working-directory: ./scripts
 
-      - run: cat extensions.json
+      # - run: npm run update-extension-list
+      #   working-directory: ./scripts
+
+      # - run: cat extensions.json
