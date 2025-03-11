@@ -25,7 +25,8 @@ runs:
     - name: Get lastest version from extension list
       continue-on-error: true
       run: |
-        LATEST_VERSION=$(semver -c $(jq -c '.extensions[] | select(.name=="${{ inputs.extension-name }}").latestVersion.version' < extensions.json))
+        LATEST_VERSION=$(jq -c '.extensions[] | select(.name=="${{ inputs.extension-name }}").latestVersion.version' < extensions.json)
+        LATEST_VERSION=$(semver -c "${LATEST_VERSION:-0.0.0}")
         echo "LATEST_VERSION=$LATEST_VERSION" >> "$GITHUB_ENV"
       shell: bash
 
