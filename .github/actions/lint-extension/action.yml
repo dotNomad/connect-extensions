@@ -11,6 +11,8 @@ runs:
   using: "composite"
 
   steps:
+    # Ensures that the manifest.json for the given extension name
+    # contains all the required fields for the rest of the release workflow
     - run: |
         jq '
           if (.extension | type) != "object" then error("Missing extension object")
@@ -28,6 +30,8 @@ runs:
     - run: npm install -g semver
       shell: bash
 
+    # The semver must be valid for the sorting, comparisons, and release
+    # process to work
     - name: Check for valid semver
       run: |
         semver -c $(jq -c -r '.extension.version' < ./extensions/${{ inputs.extension-name }}/manifest.json)

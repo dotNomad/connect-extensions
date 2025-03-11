@@ -22,6 +22,9 @@ runs:
         echo "MANIFEST_VERSION=$MANIFEST_VERSION" >> "$GITHUB_ENV"
       shell: bash
 
+    # Grabs the latest version from the extensions.json file
+    # If an extension hasn't been released yet we default to `0.0.0` so any
+    # version in the manifest will be higher
     - name: Get lastest version from extension list
       continue-on-error: true
       run: |
@@ -30,6 +33,11 @@ runs:
         echo "LATEST_VERSION=$LATEST_VERSION" >> "$GITHUB_ENV"
       shell: bash
 
+    # We only want to release if the manifest.json contains a newer semver
+    # version than the latest version in the extensions.json
+    # We compare that here, and echo if a release will occur
+    # This can be helpful when looking at Pull Request action outputs
+    # so it is clear what will happen on a merge to `main`
     - name: Check if manifest has newer version
       id: should_release
       run: |
@@ -44,11 +52,14 @@ runs:
         fi
       shell: bash
 
+    # Here we download the packaged extension artifact to release
     - uses: actions/download-artifact@v4
       if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
       with:
         name: ${{ inputs.extension-name }}.tar.gz
 
+    # The release tag utilizes both the extension name and semver version
+    # to create a unique tag for the repository
     - name: Release tag
       if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
       id: release_tag
@@ -65,10 +76,14 @@ runs:
           ${{ inputs.extension-name }}.tar.gz
       shell: bash
 
+    # We fetch the full release data to utilize in the extension list update
     - name: Get release data
       run: gh api /repos/${{ github.repository }}/releases/tags/$RELEASE_TAG > release-${{ inputs.extension-name }}.json
       shell: bash
 
+    # Each release data file is uploaded as an artifact for the extension list update
+    # The naming convention is `release-<extension-name>.json` to easily
+    # download each artifact matching the pattern
     - name: Upload release data
       uses: actions/upload-artifact@v4
       with:
