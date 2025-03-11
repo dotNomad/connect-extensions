@@ -82,6 +82,17 @@ jobs:
     if: ${{ always() }}
 
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+          cache-dependency-path: scripts/package-lock.json
+
+      - run: npm ci
+        working-directory: ./scripts
+
       - name: Download GitHub release data
         uses: actions/download-artifact@v4
         with:
@@ -89,4 +100,9 @@ jobs:
           path: releases
           merge-multiple: true
 
-      - run: cat releases/*.json | jq --slurp .
+      - run: echo "RELEASES=$(cat releases/*.json | jq --slurp .)" >> "$GITHUB_ENV"
+
+      - run: npm run update-extension-list
+        working-directory: ./scripts
+
+      - run: cat extensions.json
