@@ -56,7 +56,9 @@ jobs:
 
       - name: Collect release tags
         id: collect_outputs
-        run: echo "${{ matrix.extension }}_release_tag=${{ steps.release_extension.outputs.release_tag }}" >> $GITHUB_OUTPUT
+        run: |
+          echo "${{ matrix.extension }}_release_tag=${{ steps.release_extension.outputs.release_tag }}" >> $GITHUB_OUTPUT
+          echo "extension=${{ matrix.extension }}" >> $GITHUB_OUTPUT
 
   complex-extension-changes:
     runs-on: ubuntu-latest
@@ -88,4 +90,4 @@ jobs:
     if: ${{ always() }}
 
     steps:
-      - run: echo ${{ toJSON(needs.simple-extensions.outputs) }}
+      - run: echo '${{ toJSON(needs.simple-extensions.outputs) }}'
