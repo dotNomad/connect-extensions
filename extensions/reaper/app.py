@@ -9,7 +9,7 @@ from shiny import App, reactive, render, req, ui
 if os.getenv('RSTUDIO_PRODUCT') != 'CONNECT':
     load_dotenv()
 
-# Trigger workflow 5
+# Trigger workflow 6
 client = connect.Client()
 
 def get_content_guids():

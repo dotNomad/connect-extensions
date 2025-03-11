@@ -1,15 +1,7 @@
 name: Publisher Commander Center Extension
 
 on:
-  pull_request:
-    paths:
-      - "extensions/publisher-command-center/**"
-  push:
-    branches:
-      - "main"
-    paths:
-      - "extensions/publisher-command-center/**"
-  workflow_dispatch:
+  workflow_call:
 
 env:
   EXTENSION_NAME: publisher-command-center
