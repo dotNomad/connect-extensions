@@ -93,7 +93,7 @@ jobs:
 
       - name: Fetch releases
         id: fetch-releases
-        run: echo "releases=$(cat releases/*.json | jq --slurp .)" >> "$GITHUB_OUTPUT"
+        run: echo "releases=$(cat releases/*.json | jq -c --slurp .)" >> "$GITHUB_OUTPUT"
 
   update-extension-list:
     runs-on: ubuntu-latest
