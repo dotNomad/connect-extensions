@@ -43,6 +43,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./github/actions/lint-extension
+        with:
+          extension-name: ${{ matrix.extension }}
+
       - uses: ./.github/actions/package-extension
         with:
           extension-name: ${{ matrix.extension }}

@@ -15,6 +15,10 @@ jobs:
         working-directory: ./extensions/${{ env.EXTENSION_NAME }}
 
     steps:
+      - uses: ./.github/actions/lint-extension
+        with:
+          extension-name: ${{ env.EXTENSION_NAME }}
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
