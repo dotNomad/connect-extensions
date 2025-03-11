@@ -27,6 +27,7 @@ jobs:
 
   simple-extensions:
     needs: [simple-extension-changes]
+    # https://github.com/dorny/paths-filter/issues/66#issuecomment-778267385
     if: ${{ needs.simple-extension-changes.outputs.changes != '[]' && needs.simple-extension-changes.outputs.changes != '' }}
     strategy:
       # Do not fail fast so all extensions are processed
