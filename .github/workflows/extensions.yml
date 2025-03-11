@@ -100,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [fetch-releases]
     # https://github.com/actions/runner/issues/2205
-    if: ${{ !failure() && !cancelled() && needs.fetch-releases.result == 'success' && needs.fetch-releases.outputs.releases != '[]' }}
+    if: ${{ always() && needs.fetch-releases.result == 'success' && needs.fetch-releases.outputs.releases != '[]' }}
     env:
       RELEASES: ${{ needs.fetch-releases.outputs.releases }}
 
