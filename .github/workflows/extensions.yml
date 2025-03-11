@@ -30,7 +30,6 @@ jobs:
           filters: |
             reaper: extensions/reaper/**
             integration-session-manager: extensions/integration-session-manager/**
-            notifier: extensions/notifier/**
 
   # Runs for each extension that has changed from `simple-extension-changes`
   # Lints, packages, and releases the extension if the semver is updated.
@@ -143,6 +142,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: actions/setup-node@v4
         with:
