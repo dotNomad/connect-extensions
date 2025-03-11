@@ -12,13 +12,15 @@ runs:
 
   steps:
     - run: |
-        jq 'if (.extension | type) != "object" then error("Missing extension object") \
-        elif (.extension.name | type) != "string" then error("Missing extension.name") \
-        elif (.extension.title | type) != "string" then error("Missing extension.title") \
-        elif (.extension.description | type) != "string" then error("Missing extension.description") \
-        elif (.extension.homepage | type) != "string" then error("Missing extension.homepage") \
-        elif (.extension.version | type) != "string" then error("Missing extension.version") \
-        else . end' ./extensions/${{ inputs.extension-name }}/manifest.json
+        jq '
+          if (.extension | type) != "object" then error("Missing extension object")
+          elif (.extension.name | type) != "string" then error("Missing extension.name")
+          elif (.extension.title | type) != "string" then error("Missing extension.title")
+          elif (.extension.description | type) != "string" then error("Missing extension.description")
+          elif (.extension.homepage | type) != "string" then error("Missing extension.homepage")
+          elif (.extension.version | type) != "string" then error("Missing extension.version")
+          else . end
+        ' ./extensions/notifier/manifest.json
       shell: bash
 
     - uses: actions/setup-node@v4
