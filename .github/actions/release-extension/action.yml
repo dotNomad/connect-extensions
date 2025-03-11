@@ -7,11 +7,6 @@ inputs:
     required: true
     type: string
 
-outputs:
-  release_tag:
-    description: "The release tag used for the extension"
-    value: ${{ steps.release_tag.outputs.release_tag }}
-
 runs:
   using: "composite"
 
@@ -58,13 +53,22 @@ runs:
       id: release_tag
       run: |
         RELEASE_TAG="${{ inputs.extension-name }}@v$MANIFEST_VERSION"
-        echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+        echo "RELEASE_TAG=$RELEASE_TAG" >> "$GITHUB_ENV"
       shell: bash
 
     - name: Release
       if: github.ref_name == 'main' && steps.should_release.outputs.should_release == 'true'
       run: |
-        gh release create ${{ steps.release_tag.outputs.release_tag }} \
+        gh release create $RELEASE_TAG \
           --title "${{ inputs.extension-name }} v$MANIFEST_VERSION" \
           ${{ inputs.extension-name }}.tar.gz
       shell: bash
+
+    - name: Get release data
+      run: gh api /repos/${{ github.repository }}/releases/tags/$RELEASE_TAG > release-${{ inputs.extension-name }}.json
+      shell: bash
+
+    - name: Upload release data
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-${{ inputs.extension-name }}.json
