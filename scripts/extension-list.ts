@@ -7,19 +7,23 @@ import semverRcompare from "semver/functions/rcompare";
 
 import { Extension, ExtensionManifest, ExtensionVersion } from "./types";
 
-const extensionName = process.env.EXTENSION_NAME;
-// Runs from ./scripts/dist so go up an additional level
-const manifestPath = path.join(
-  __dirname,
-  "..",
-  "..",
-  "extensions",
-  extensionName,
-  "manifest.json"
-);
-const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+function getExtensionNameFromRelease(release: any): string {
+  const tag = release.tagName as string;
+  return tag.split("@")[0];
+}
 
-const githubRelease = JSON.parse(process.env.GITHUB_RELEASE);
+function getManifest(extensionName: string): ExtensionManifest {
+  // Runs from ./scripts/dist so go up an additional level
+  const manifestPath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "extensions",
+    extensionName,
+    "manifest.json"
+  );
+  return JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+}
 
 // Sort the given extension's version in descending order
 function sortExtensionVersions(extension: Extension) {
@@ -146,7 +150,13 @@ const extensionListFilePath = path.join(
   "extensions.json"
 );
 
+const releases = JSON.parse(process.env.RELEASES);
 const list = ExtensionList.fromFile(extensionListFilePath);
-list.addRelease(manifest, githubRelease);
+
+releases.forEach((release) => {
+  const name = getExtensionNameFromRelease(release);
+  const manifest = getManifest(name);
+  list.addRelease(manifest, release);
+});
 
 fs.writeFileSync(extensionListFilePath, list.stringify());
