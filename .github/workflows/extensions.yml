@@ -141,6 +141,9 @@ jobs:
       RELEASES: ${{ needs.fetch-releases.outputs.releases }}
 
     steps:
+      # Checkout main to commit the updated extension list
+      # reduces the chance of conflicts when updating the extension list with
+      # multiple running workflows
       - uses: actions/checkout@v4
         with:
           ref: main
