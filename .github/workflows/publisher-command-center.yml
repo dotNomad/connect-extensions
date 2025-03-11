@@ -37,11 +37,11 @@ jobs:
             extensions/${{ env.EXTENSION_NAME }}/manifest.json
             extensions/${{ env.EXTENSION_NAME }}/connect-extension.toml
 
-      - uses: ./github/actions/package-extension
+      - uses: ./.github/actions/package-extension
         with:
           extension-name: ${{ env.EXTENSION_NAME }}
           artifact-name: ${{ env.EXTENSION_NAME }}
 
-      - uses: ./github/actions/release-extension
+      - uses: ./.github/actions/release-extension
         with:
           extension-name: ${{ env.EXTENSION_NAME }}
