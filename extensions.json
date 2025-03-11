@@ -1,3 +1,40 @@
 {
-  "extensions": []
+  "extensions": [
+    {
+      "name": "publisher-command-center",
+      "title": "Publisher Command Center",
+      "description": "A dashboard for publishers to help manage and track their content",
+      "homepage": "https://github.com/posit-dev/connect-extensions/tree/main/extensions/publisher-command-center",
+      "latestVersion": {
+        "version": "2.0.1",
+        "released": "2025-03-11T22:39:02Z",
+        "url": "https://github.com/dotNomad/connect-extensions/releases/download/publisher-command-center%40v2.0.1/publisher-command-center.tar.gz"
+      },
+      "versions": [
+        {
+          "version": "2.0.1",
+          "released": "2025-03-11T22:39:02Z",
+          "url": "https://github.com/dotNomad/connect-extensions/releases/download/publisher-command-center%40v2.0.1/publisher-command-center.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "reaper",
+      "title": "Reaper",
+      "description": "A view to a kill.",
+      "homepage": "https://github.com/posit-dev/connect-extensions/tree/main/extensions/reaper",
+      "latestVersion": {
+        "version": "2.0.1",
+        "released": "2025-03-11T22:38:48Z",
+        "url": "https://github.com/dotNomad/connect-extensions/releases/download/reaper%40v2.0.1/reaper.tar.gz"
+      },
+      "versions": [
+        {
+          "version": "2.0.1",
+          "released": "2025-03-11T22:38:48Z",
+          "url": "https://github.com/dotNomad/connect-extensions/releases/download/reaper%40v2.0.1/reaper.tar.gz"
+        }
+      ]
+    }
+  ]
 }
