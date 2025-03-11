@@ -39,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      releases: ${{ toJSON(steps.collect_outputs.outputs) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -48,8 +50,13 @@ jobs:
           extension-name: ${{ matrix.extension }}
 
       - uses: ./.github/actions/release-extension
+        id: release_extension
         with:
           extension-name: ${{ matrix.extension }}
+
+      - name: Collect release tags
+        id: collect_outputs
+        run: echo "${{ matrix.extension }}_release_tag=${{ steps.release_extension.outputs.release_tag }}" >> $GITHUB_OUTPUT
 
   complex-extension-changes:
     runs-on: ubuntu-latest
@@ -68,9 +75,9 @@ jobs:
             publisher-command-center: extensions/publisher-command-center/**
 
   publisher-command-center:
+    runs-on: ubuntu-latest
     needs: [complex-extension-changes]
     if: ${{ needs.complex-extension-changes.outputs.publisher-command-center == 'true'}}
-    runs-on: ubuntu-latest
 
     steps:
       - run: echo "Publisher Command Center"
@@ -78,7 +85,7 @@ jobs:
   update-extension-list:
     runs-on: ubuntu-latest
     needs: [simple-extensions, publisher-command-center]
-
     if: ${{ always() }}
+
     steps:
       - run: echo ${{ toJSON(needs.simple-extensions.outputs) }}
