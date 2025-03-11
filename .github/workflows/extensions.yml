@@ -71,15 +71,17 @@ jobs:
   publisher-command-center:
     runs-on: ubuntu-latest
     needs: [complex-extension-changes]
-    if: ${{ needs.complex-extension-changes.outputs.publisher-command-center == 'true'}}
+    if: ${{ needs.complex-extension-changes.outputs.publisher-command-center == 'true' }}
 
     steps:
       - run: echo "Publisher Command Center"
 
-  update-extension-list:
+  fetch-releases:
     runs-on: ubuntu-latest
     needs: [simple-extensions, publisher-command-center]
     if: ${{ always() }}
+    outputs:
+      releases: ${{ steps.fetch-releases.outputs.releases }}
 
     steps:
       - name: Download GitHub release data
@@ -89,17 +91,18 @@ jobs:
           path: releases
           merge-multiple: true
 
-      - run: echo "RELEASES=$(cat releases/*.json | jq --slurp .)" >> "$GITHUB_ENV"
+      - name: Fetch releases
+        id: fetch-releases
+        run: echo "releases=$(cat releases/*.json | jq --slurp .)" >> "$GITHUB_OUTPUT"
 
-      - name: Check if releases exist
-        run: |
-          if [ "$RELEASES" == "[]" ]; then
-            echo "No extension releases found, exiting job successfully"
-            exit 0
-          else
-            echo "Found releases, continuing with update to extension list"
-          fi
+  update-extension-list:
+    runs-on: ubuntu-latest
+    needs: [fetch-releases]
+    if: ${{ needs.fetch-releases.outputs.releases != '[]' }}
+    env:
+      RELEASES: ${{ needs.fetch-releases.outputs.releases }}
 
+    steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
