@@ -29,5 +29,8 @@
     "connect-extension.toml": {
       "checksum": "110f38ecd19febb0014b401396035605"
     }
+  },
+  "extension": {
+    "version": "0.0.1"
   }
 }
