@@ -48,7 +48,6 @@ jobs:
           extension-name: ${{ matrix.extension }}
 
       - uses: ./.github/actions/release-extension
-        id: release_extension
         with:
           extension-name: ${{ matrix.extension }}
 
@@ -69,12 +68,9 @@ jobs:
             publisher-command-center: extensions/publisher-command-center/**
 
   publisher-command-center:
-    runs-on: ubuntu-latest
     needs: [complex-extension-changes]
     if: ${{ needs.complex-extension-changes.outputs.publisher-command-center == 'true' }}
-
-    steps:
-      - run: echo "Publisher Command Center"
+    uses: ./.github/workflows/publisher-command-center.yml
 
   fetch-releases:
     runs-on: ubuntu-latest

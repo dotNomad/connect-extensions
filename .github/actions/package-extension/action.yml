@@ -6,13 +6,29 @@ inputs:
     description: The name of the extension
     required: true
     type: string
+  artifact-name:
+    description: The name of the artifact
+    required: false
+    type: string
 
 runs:
   using: "composite"
 
   steps:
     - name: Create tar
+      if: ${{ inputs.artifact-name == '' }}
       run: tar -czf ${{ inputs.extension-name}}.tar.gz ./extensions/${{ inputs.extension-name}}
+      shell: bash
+
+    - name: Download optional artifact
+      if: ${{ inputs.artifact-name != '' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+
+    - name: Create tar from artifact
+      if: ${{ inputs.artifact-name != '' }}
+      run: tar -czf ${{ inputs.extension-name }}.tar.gz ${{ inputs.artifact-name }}
       shell: bash
 
     - name: Upload extension tar

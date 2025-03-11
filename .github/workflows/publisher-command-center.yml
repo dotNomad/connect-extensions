@@ -8,7 +8,7 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build:
+  extension:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -16,6 +16,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
@@ -36,45 +37,11 @@ jobs:
             extensions/${{ env.EXTENSION_NAME }}/manifest.json
             extensions/${{ env.EXTENSION_NAME }}/connect-extension.toml
 
-  package:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/download-artifact@v4
+      - uses: ./github/actions/package-extension
         with:
-          name: ${{ env.EXTENSION_NAME}}
-          path: ${{ env.EXTENSION_NAME }}
+          extension-name: ${{ env.EXTENSION_NAME }}
+          artifact-name: ${{ env.EXTENSION_NAME }}
 
-      - name: Create tar
-        run: tar -czf $EXTENSION_NAME.tar.gz $EXTENSION_NAME
-
-      - name: Upload extension tar
-        uses: actions/upload-artifact@v4
+      - uses: ./github/actions/release-extension
         with:
-          name: ${{ env.EXTENSION_NAME }}.tar.gz
-          path: ${{ env.EXTENSION_NAME }}.tar.gz
-
-  should-release:
-    uses: ./.github/workflows/should-release.yml
-    with:
-      extension-name: publisher-command-center
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  release:
-    if: needs.should-release.outputs.should-release == 'true'
-    uses: ./.github/workflows/release.yml
-    needs: [should-release, package]
-    with:
-      extension-name: publisher-command-center
-      version: ${{ needs.should-release.outputs.version }}
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  update-extension-list:
-    uses: ./.github/workflows/update-extension-list.yml
-    needs: [release]
-    with:
-      extension-name: publisher-command-center
-      release: ${{ needs.release.outputs.release }}
+          extension-name: ${{ env.EXTENSION_NAME }}
