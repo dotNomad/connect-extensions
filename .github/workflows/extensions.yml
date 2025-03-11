@@ -27,6 +27,7 @@ jobs:
 
   simple-extensions:
     needs: [simple-extension-changes]
+    if: ${{ needs.simple-extension-changes.outputs.changes != '[]' && needs.simple-extension-changes.outputs.changes != '' }}
     strategy:
       # Do not fail fast so all extensions are processed
       fail-fast: false
